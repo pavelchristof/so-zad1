@@ -26,6 +26,11 @@ socket socket_exec(const char* path)
 	syserr("socket_exec: fork failed");
 
     case 0: {
+	if (close(parent_to_child_fd[1]) == -1 ||
+	    close(child_to_parent_fd[0]) == -1) {
+	    syserr("socket_exec: close failed");
+	}
+
 	char in_fd[16];
 	char out_fd[16];
 
@@ -40,6 +45,11 @@ socket socket_exec(const char* path)
     }
 	
     default: {
+	if (close(parent_to_child_fd[0]) == -1 ||
+	    close(child_to_parent_fd[1]) == -1) {
+	    syserr("socket_exec: close failed");
+	}
+
 	socket s;
 	s.in_fd = child_to_parent_fd[0];
 	s.out_fd = parent_to_child_fd[1];
