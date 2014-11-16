@@ -1,0 +1,35 @@
+Połączenia
+==========
+
+Połącznie pomiędzy dwoma procesami to para łącz nienazwanych. Przez gniazdo (socket) będziemy rozumieć jedną stronę takiego połączenia, czyli parę deskryptorów plików - jeden do czytania, drugi do pisania. Przez gniazda będziemy przesyłać wyłącznie liczby typu long.
+
+Inicjalizacja
+=============
+
+Połączenie jest tworzone przez rodzica i jedno gniazdo jest przekazywane dziecku. Następnie rodzic przesyła dziecku numer wiersza n oraz numer procesu i.
+
+Praca
+=====
+
+Każdy z procesów W(i) posiada swój wewnętrzny stan, na początku równy 0. W kroku liczącym k-ty wierz proces W(i):
+1. przesyła procesowi W(i+1) swój stan, odpowiadający wartości (k-1) po i,
+2. odbiera od W(i-1) jego stan (przyjmijmy że W(0)=Pascal), odpowiadający wartości (k-1) po (i-1),
+3. aktualizuje swój stan dodając do niego odebraną wartość, tym samym otrzymując k po i.
+
+Proces Pascal inicjalizuje każdy krok wysyłając procesowi W(1) liczbę 1 jeśli k=1, lub 0 w przeciwnym wypadku.
+
+Zbieranie wyników
+=================
+
+Po obliczeniu n-tego wiersza proces W(i):
+1. przesyła swój stan procesowi W(i-1),
+2. odbiera od procesu W(i+1) n-i liczb i przekazuje je procesowi W(i-1).
+
+Proces Pascal poprostu odbiera n liczb od W(1) i wypisuje je na wyjście.
+
+Kiedy tworzone są procesy
+=========================
+
+Pascal tworzy i inicjalizuje na starcie proces W(1). Proces W(i) dla i > 1 jest tworzony przez proces W(i-1) wtedy, kiedy jest potrzebny, czyli podczas obliczania i-tego wiersza. 
+
+Zdarza się tak, że próbujemy wysłać wiadomość do procesu, który jeszcze nie istnieje, albo nigdy istnieć nie będzie (proces W(n+1)). Ignorujemy takie wiadomości za pomocą specjalnego rodzaju gniazda - null socket. Upraszcza to algorytm, bo nie trzeba osobno rozważać przypadków krańcowych.
